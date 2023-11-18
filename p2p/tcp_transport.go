@@ -1,15 +1,15 @@
 package p2p
 
 import (
-	"bytes"
-	"fmt"
+	"encoding/gob"
 	"net"
 
 	"github.com/sirupsen/logrus"
 )
 
 type Peer struct {
-	conn net.Conn
+	conn     net.Conn
+	outbound bool //node1 ->node2 => node1 = true, node2= false
 }
 
 func (p *Peer) Send(b []byte) error {
@@ -18,18 +18,14 @@ func (p *Peer) Send(b []byte) error {
 }
 
 func (p *Peer) readLoop(msgChan chan *Message) {
-	buf := make([]byte, 1024)
 	for {
-		n, err := p.conn.Read(buf)
-		if err != nil {
+		msg := new(Message)
+		if err := gob.NewDecoder(p.conn).Decode(msg); err != nil {
+			logrus.Errorf("decode message error: %s", err)
 			break
 		}
-		msgChan <- &Message{
-			Payload: bytes.NewReader(buf[:n]),
-			From:    p.conn.RemoteAddr(),
-		}
+		msgChan <- msg
 	}
-	p.conn.Close()
 }
 
 type TcpTransport struct {
@@ -61,10 +57,11 @@ func (t *TcpTransport) ListenAndAccept() error {
 			continue
 		}
 		peer := Peer{
-			conn: conn,
+			conn:     conn,
+			outbound: false,
 		}
-		
+
 		t.AddPeer <- &peer
 	}
-	return fmt.Errorf("TCP transport stopped reason: ?")
+
 }

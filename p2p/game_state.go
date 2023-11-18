@@ -1,32 +1,32 @@
 package p2p
 
-type Round uint32
+type GameStatus uint32
 
-const(
-	Dealing Round = iota
-	PreFlop
-	Flop
-	Turn 
-	River
 
+func (g GameStatus) String() string {
+	return []string{"WAITING","DEALING","PREFLOP","FLOP","TURN","RIVER"}[g]
+}
+const (
+	GameStatusWating GameStatus = iota
+	GameStatusDealing 
+	GameStatusPreFlop
+	GameStatusFlop
+	GameStatusTurn
+	GameStatusRiver
 )
 
+type GameState struct {
+	isDealer bool //should be atomic accessable
 
-
-type GameState struct{
-	isDealer bool //atomic accessable
-
-	Round uint32
+	GameStatus GameStatus //should be atomic accessable
 }
 
-func NewGameState() *GameState{
+func NewGameState() *GameState {
 	return &GameState{}
 }
 
-func (g *GameState) loop(){
-	for{
-		select{
-
-		}
+func (g *GameState) loop() {
+	for {
+		select {}
 	}
 }
