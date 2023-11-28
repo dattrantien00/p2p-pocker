@@ -2,6 +2,7 @@ package p2p
 
 import (
 	"encoding/gob"
+	"fmt"
 	"net"
 
 	"github.com/sirupsen/logrus"
@@ -10,6 +11,7 @@ import (
 type Peer struct {
 	conn     net.Conn
 	outbound bool //node1 ->node2 => node1 = true, node2= false
+	listenAddr string
 }
 
 func (p *Peer) Send(b []byte) error {
@@ -24,6 +26,7 @@ func (p *Peer) readLoop(msgChan chan *Message) {
 			logrus.Errorf("decode message error: %s", err)
 			break
 		}
+		fmt.Printf("%+v, %s\n", msg, "receive")
 		msgChan <- msg
 	}
 }

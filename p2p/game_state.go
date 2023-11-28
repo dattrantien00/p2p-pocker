@@ -4,10 +4,10 @@ type GameStatus uint32
 
 
 func (g GameStatus) String() string {
-	return []string{"WAITING","DEALING","PREFLOP","FLOP","TURN","RIVER"}[g]
+	return []string{"WAITING FOR CARDS","DEALING","PREFLOP","FLOP","TURN","RIVER"}[g]
 }
 const (
-	GameStatusWating GameStatus = iota
+	GameStatusWatingForCards GameStatus = iota
 	GameStatusDealing 
 	GameStatusPreFlop
 	GameStatusFlop
